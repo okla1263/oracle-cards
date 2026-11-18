@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心靈覺察 · 三張開悟卡占卜</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #FFFCF6;
+            --ink: #3E3A39;
+            --coral: #F2A497;
+            --yellow: #F6D27A;
+            --blue: #A8D3E6;
+            --green: #B9DAA5;
+            --purple: #D4C1EC;
+            --shadow: 3px 3px 0px #3E3A39;
+            --border: 3px solid #3E3A39;
+            --radius: 22px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Zen Maru Gothic', sans-serif;
+            color: var(--ink);
+        }
+
+        body {
+            background-color: var(--paper);
+            background-image: radial-gradient(#e5e0d8 1.2px, transparent 1.2px);
+            background-size: 20px 20px;
+            padding-bottom: 80px;
+        }
+
+        /* 頂端導覽列 */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--paper);
+            border-bottom: var(--border);
+            padding: 10px 14px;
+            z-index: 1000;
+        }
+
+        .nav-bar {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .pill-btn {
+            background: #fff;
+            border: var(--border);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px var(--ink);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .pill-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+
+        .pill-btn.brand { background: var(--yellow); }
+        .pill-btn.reset { background: var(--coral); }
+
+        /* 主容器 */
+        .container {
+            max-width: 600px;
+            margin: 76px auto 20px auto;
+            padding: 0 15px;
+        }
+
+        .card-box {
+            background: #fff;
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px 18px;
+            margin-bottom: 22px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border: 2.5px solid var(--ink);
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .tag-blue { background: var(--blue); }
+        .tag-green { background: var(--green); }
+        .tag-coral { background: var(--coral); }
+        .tag-yellow { background: var(--yellow); }
+        .tag-purple { background: var(--purple); }
+
+        /* 首頁引導區 */
+        .intro-text {
+            font-size: 15px;
+            line-height: 1.75;
+            margin-bottom: 14px;
+            text-align: justify;
+        }
+
+        .position-guide {
+            background: var(--paper);
+            border: 2.5px solid var(--ink);
+            border-radius: 16px;
+            padding: 14px;
+            margin: 16px 0;
+        }
+
+        .guide-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .guide-row:last-child { margin-bottom: 0; }
+
+        .big-action-btn {
+            width: 100%;
+            background: var(--green);
+            border: var(--border);
+            border-radius: 18px;
+            padding: 14px 20px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .big-action-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px var(--ink);
+        }
+
+        /* 洗牌動畫區 */
+        #shuffleArea {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .shuffle-deck {
+            position: relative;
+            width: 120px;
+            height: 165px;
+            margin: 0 auto 20px auto;
+        }
+
+        .deck-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: var(--border);
+            border-radius: 16px;
+            background: var(--yellow);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        @keyframes shuffleLeft {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            50% { transform: translateX(-35px) rotate(-12deg); }
+        }
+        @keyframes shuffleRight {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            50% { transform: translateX(35px) rotate(12deg); }
+        }
+        .deck-card:nth-child(1) { animation: shuffleLeft 0.6s infinite ease-in-out; background: var(--coral); }
+        .deck-card:nth-child(2) { animation: shuffleRight 0.6s infinite ease-in-out; background: var(--blue); }
+        .deck-card:nth-child(3) { background: var(--yellow); }
+
+        /* 抽牌結果區 */
+        #readingArea { display: none; }
+
+        .three-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .mini-slot {
+            background: #fff;
+            border: 2.5px solid var(--ink);
+            border-radius: 16px;
+            padding: 10px 6px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px var(--ink);
+            transition: all 0.2s ease;
+        }
+
+        .mini-slot.selected {
+            background: var(--yellow);
+            transform: translateY(-3px);
+        }
+
+        .mini-slot.unflipped {
+            background: var(--blue);
+        }
+
+        .slot-label {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 8px;
+            border: 1.5px solid var(--ink);
+            background: #fff;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        .slot-name {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        /* 單張大卡片詳細解析 */
+        .detail-card {
+            background: #fff;
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px 18px;
+            margin-bottom: 18px;
+        }
+
+        .unflipped-cover {
+            text-align: center;
+            padding: 45px 15px;
+            background: var(--paper);
+            border: 2.5px dashed var(--ink);
+            border-radius: 18px;
+            cursor: pointer;
+        }
+
+        .illustration-frame {
+            width: 100%;
+            max-width: 240px;
+            margin: 0 auto 16px auto;
+            border: var(--border);
+            border-radius: 18px;
+            background: var(--paper);
+            padding: 10px;
+            box-shadow: 2px 2px 0px var(--ink);
+        }
+
+        .card-pos-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .card-main-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .section-block {
+            background: var(--paper);
+            border: 2px solid var(--ink);
+            border-radius: 14px;
+            padding: 13px 14px;
+            margin-top: 12px;
+        }
+
+        .section-heading {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-body {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #444;
+        }
+
+        .nav-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .ctrl-btn {
+            background: #fff;
+            border: var(--border);
+            border-radius: 14px;
+            padding: 11px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px var(--ink);
+        }
+        .ctrl-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .utility-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .util-btn {
+            flex: 1;
+            background: var(--purple);
+            border: 2.5px solid var(--ink);
+            border-radius: 14px;
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px var(--ink);
+            text-align: center;
+        }
+
+        /* 總覽模式卡片 */
+        .summary-item {
+            border-bottom: 2px dashed #dcd6cc;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+        .summary-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--ink);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            z-index: 2000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-bar">
+            <button class="pill-btn brand" onclick="goHome()">✨ 心靈開悟卡</button>
+            <div style="display:flex; gap:6px;">
+                <button class="pill-btn" id="viewToggleBtn" style="display:none;" onclick="toggleAllSummary()">一覽三張</button>
+                <button class="pill-btn reset" id="redrawBtn" style="display:none;" onclick="startReading()">重新抽牌</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. 首頁引導說明 -->
+        <div id="introArea" class="card-box">
+            <div class="tag tag-yellow">Psychology of Vision · 心靈覺察工具</div>
+            <h1 style="font-size: 22px; margin-bottom: 12px;">三張牌卡心靈解讀</h1>
+            
+            <p class="intro-text">
+                你可以用這些卡片來幫助自己釐清個人目標、改善生活、工作以及親密關係。無論是否正經歷激烈的情緒和思緒，還是對生活中發生的事情感到麻木與疏離，這都是很棒的內在應急工具。
+            </p>
+
+            <div class="position-guide">
+                <div class="guide-row">
+                    <span class="tag tag-coral" style="margin:0; flex-shrink:0;">第一張卡</span>
+                    <div><strong>【問題 / 潛在議題】</strong><br>點出目前卡住的核心盲點或無意識模式。</div>
+                </div>
+                <div class="guide-row">
+                    <span class="tag tag-blue" style="margin:0; flex-shrink:0;">第二張卡</span>
+                    <div><strong>【建議 / 改善方式】</strong><br>給予具體的行動建議與轉念方向。</div>
+                </div>
+                <div class="guide-row">
+                    <span class="tag tag-green" style="margin:0; flex-shrink:0;">第三張卡</span>
+                    <div><strong>【禮物 / 轉化收穫】</strong><br>揭示跨越課題後會迎來的祝福與成長。</div>
+                </div>
+            </div>
+
+            <p style="font-size: 13px; color: #666; text-align: center; margin-bottom: 12px;">
+                靜下心來深呼吸三次，在心中默想你最近的困惑或想探索的主題，然後點擊下方按鈕：
+            </p>
+
+            <button class="big-action-btn" onclick="startReading()">
+                <span>🔮</span> <span>取得解讀（抽取三張牌）</span>
+            </button>
+
+            <div id="resumeBox" style="display:none; margin-top:14px; text-align:center;">
+                <button class="pill-btn" style="background:var(--purple);" onclick="resumeLastReading()">
+                    📖 查看上次抽出的牌組紀錄
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. 洗牌動畫區 -->
+        <div id="shuffleArea" class="card-box">
+            <div class="shuffle-deck">
+                <div class="deck-card">🌙</div>
+                <div class="deck-card">☀️</div>
+                <div class="deck-card">✨</div>
+            </div>
+            <h2 style="font-size: 19px; margin-bottom: 6px;">正在連結你的潛意識頻率...</h2>
+            <p style="font-size: 13px; color: #666;">為你挑選最契合當下的三張指引牌卡</p>
+        </div>
+
+        <!-- 3. 抽牌結果與解讀區 -->
+        <div id="readingArea">
+            <!-- 三張牌卡快速切換列 -->
+            <div class="three-slots" id="threeSlots"></div>
+
+            <!-- 單張卡片詳細檢視 -->
+            <div id="singleCardView">
+                <div class="detail-card" id="detailCardContent"></div>
+
+                <div class="nav-controls">
+                    <button class="ctrl-btn" id="prevBtn" onclick="changeCard(-1)">⬅️ 上一張卡</button>
+                    <button class="ctrl-btn" id="nextBtn" onclick="changeCard(1)">下一張卡 ➡️</button>
+                </div>
+            </div>
+
+            <!-- 三張總覽模式 -->
+            <div id="allSummaryView" class="card-box" style="display:none;"></div>
+
+            <!-- 實用工具列 -->
+            <div class="utility-row">
+                <button class="util-btn" style="background:var(--yellow);" onclick="flipAllCards()">👁️ 一鍵翻開全部</button>
+                <button class="util-btn" onclick="copyReadingText()">📋 複製完整解讀</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast" class="toast">已複製完整牌陣解讀！</div>
+
+    <script>
+        // 牌陣位置定義
+        const POSITIONS = [
+            {
+                step: '第一張卡',
+                role: '問題 / 潛在議題',
+                badgeClass: 'tag-coral',
+                hint: '點出目前卡住的核心盲點或無意識模式'
+            },
+            {
+                step: '第二張卡',
+                role: '建議 / 改善方式',
+                badgeClass: 'tag-blue',
+                hint: '給予具體的行動建議與轉念方向'
+            },
+            {
+                step: '第三張卡',
+                role: '禮物 / 轉化收穫',
+                badgeClass: 'tag-green',
+                hint: '揭示跨越課題後會迎來的祝福與成長'
+            }
+        ];
+
+        // 24張開悟卡改編完整牌庫（四大牌組各6張）
+        const CARD_DECK = [
+            // --- 無意識卡組 (Unconscious) ---
+            {
+                id: 'u1', name: '前世印記', deck: '無意識卡組', deckColor: 'var(--purple)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><circle cx="100" cy="65" r="45" fill="#D4C1EC" stroke="#3E3A39" stroke-width="3"/><path d="M70 65 Q100 25 130 65 Q100 105 70 65 Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/><circle cx="100" cy="65" r="12" fill="#F6D27A" stroke="#3E3A39" stroke-width="2.5"/></svg>`,
+                concept: '生命中重複出現的模式，往往源自深層的潛意識記憶（實際上或隱喻）。',
+                meaning: '這張卡象徵來自無意識心靈的舊故事，像夢境般隱喻著當下的處境。這些未被察覺的舊印記常伴隨著莫名的恐懼、罪惡感或無力感，一旦被看見並療癒，就能帶來深刻的生命轉變。',
+                apply: '1. 覺察這份情緒是否感覺「很熟悉」，像過去曾重複上演的劇本。\n2. 睡前向內在智慧請求透過夢境或直覺帶來線索。\n3. 告訴自己：「過去的故事已經結束，我現在是安全的，可以選擇新的回應。」'
+            },
+            {
+                id: 'u2', name: '投射之鏡', deck: '無意識卡組', deckColor: 'var(--purple)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><rect x="45" y="25" width="45" height="80" rx="22" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3"/><rect x="110" y="25" width="45" height="80" rx="22" fill="#F2A497" stroke="#3E3A39" stroke-width="3"/><line x1="90" y1="65" x2="110" y2="65" stroke="#3E3A39" stroke-width="3" stroke-dasharray="4 3"/></svg>`,
+                concept: '外在世界是一面鏡子，我們在他人身上抗拒的特質，往往反映了內在未接納的部分。',
+                meaning: '當我們強烈指責某人自私、冷漠或控制時，其實是將內心壓抑的陰影投射到對方身上。投射讓我們把責任交給外界，卻也讓我們失去了改變現況的主導權。',
+                apply: '1. 寫下最讓你感到生氣或委屈的人與事件。\n2. 溫柔地問自己：「我是不是也用類似的方式對待自己，或害怕自己變成這樣？」\n3. 把焦點從「要求對方改變」收回到「照顧自己的感受」。'
+            },
+            {
+                id: 'u3', name: '隱形罪惡感', deck: '無意識卡組', deckColor: 'var(--purple)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><path d="M55 85 Q100 30 145 85 Z" fill="#E8E4DC" stroke="#3E3A39" stroke-width="3"/><circle cx="100" cy="45" r="14" fill="#F6D27A" stroke="#3E3A39" stroke-width="2.5"/><line x1="40" y1="95" x2="160" y2="95" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '潛意識裡覺得「我不夠好」或「我不配擁有幸福」，進而暗中自我懲罰。',
+                meaning: '罪惡感是心靈最沉重的包袱之一。有時候我們在事情即將順利時突然搞砸，或者總是吸引消耗自己的人，背後往往藏著「我不值得被愛」的無意識信念。',
+                apply: '1. 停止在心中反覆審判自己過去的失誤。\n2. 對自己說：「當時的我已經盡力了，我允許自己放下自責。」\n3. 今天刻意為自己做一件單純快樂、不帶任何條件的小事。'
+            },
+            {
+                id: 'u4', name: '分裂與孤立', deck: '無意識卡組', deckColor: 'var(--purple)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><circle cx="65" cy="65" r="24" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3"/><circle cx="135" cy="65" r="24" fill="#B9DAA5" stroke="#3E3A39" stroke-width="3"/><path d="M95 30 L105 65 L95 100" fill="none" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '為了避免受傷而築起心牆，卻也同時把支持與溫暖隔絕在門外。',
+                meaning: '當我們害怕被拒絕或失望時，會下意識選擇「我靠自己就好、不需要任何人」。這種孤立感會讓人覺得世界冷漠，其實只是心門暫時鎖上了。',
+                apply: '1. 覺察自己是否正在刻意疏遠關心你的人。\n2. 練習向信任的朋友分享一個小小的脆弱或近況。\n3. 提醒自己：尋求連結不是軟弱，而是人類最自然的本能。'
+            },
+            {
+                id: 'u5', name: '家族忠誠度', deck: '無意識卡組', deckColor: 'var(--purple)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><circle cx="100" cy="40" r="15" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/><circle cx="65" cy="90" r="15" fill="#F2A497" stroke="#3E3A39" stroke-width="3"/><circle cx="135" cy="90" r="15" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3"/><line x1="100" y1="55" x2="65" y2="75" stroke="#3E3A39" stroke-width="2.5"/><line x1="100" y1="55" x2="135" y2="75" stroke="#3E3A39" stroke-width="2.5"/></svg>`,
+                concept: '無意識地承接了原生家庭的辛苦、焦慮或限制性信念，以此表達對家人的愛。',
+                meaning: '我們常常在不知不覺中重複父母的勞碌命、金錢觀或關係模式，彷彿「如果我過得太輕鬆幸福，就是背叛了辛苦的家人」。',
+                apply: '1. 在心中向家人致意：「我愛你們，但我不再替你們背負人生的重擔。」\n2. 分辨眼前的焦慮是屬於你自己的，還是從小耳濡目染學來的。\n3. 允許自己活出比上一代更輕盈、自由的版本。'
+            },
+            {
+                id: 'u6', name: '恐懼的幻象', deck: '無意識卡組', deckColor: 'var(--purple)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><polygon points="100,25 45,100 155,100" fill="#E8E4DC" stroke="#3E3A39" stroke-width="3"/><circle cx="100" cy="70" r="16" fill="#F2A497" stroke="#3E3A39" stroke-width="2.5"/></svg>`,
+                concept: '恐懼往往是心智對未來的過度編劇，而非眼前真實發生的危險。',
+                meaning: '當我們被恐懼佔據時，大腦會不斷放大最壞的結果，讓我們在原地動彈不得。其實恐懼只是愛與信任暫時缺席的狀態。',
+                apply: '1. 把腦中擔心的事情具體寫在紙上，你會發現它們沒那麼龐大。\n2. 問自己：「此時此刻這一秒，我真的有危險嗎？」\n3. 把注意力拉回呼吸與當下能完成的一件小事。'
+            },
+
+            // --- 陷阱卡組 (Pitfalls) ---
+            {
+                id: 'p1', name: '過度控制', deck: '陷阱卡組', deckColor: 'var(--coral)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><rect x="65" y="30" width="70" height="70" rx="12" fill="#F2A497" stroke="#3E3A39" stroke-width="3"/><circle cx="100" cy="65" r="15" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/></svg>`,
+                concept: '試圖掌控所有細節與他人的反應，源於內心深處的不安全感。',
+                meaning: '當你抓得越緊，能量就越容易僵化。過度控制不僅讓自己精疲力竭，也會讓身邊的人感到窒息，反而把好事推開。',
+                apply: '1. 列出目前讓你焦慮的事，區分「我能控制的」與「我無法控制的」。\n2. 練習對無法控制的部分說一聲：「我交託出去，順其自然。」\n3. 給事情留一點彈性空間，往往會有意想不到的好轉。'
+            },
+            {
+                id: 'p2', name: '受害者劇本', deck: '陷阱卡組', deckColor: 'var(--coral)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><circle cx="100" cy="75" r="28" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3"/><path d="M50 35 Q100 55 150 35" fill="none" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '覺得自己總是無辜受傷、別人都虧欠自己，無形中交出了人生的力量。',
+                meaning: '在困境中感到委屈是很正常的，但如果長期停留在「都是環境或別人的錯」，就會讓自己困在無助的位置上，看不見其實你永遠擁有選擇權。',
+                apply: '1. 允許自己先好好哭一場或抒發委屈，不壓抑真實情緒。\n2. 情緒平復後問自己：「在這件事裡，我學到了什麼界線？下一步我可以為自己做什麼？」\n3. 從「為什麼是我」轉向「我能如何為自己負責」。'
+            },
+            {
+                id: 'p3', name: '期待與失望', deck: '陷阱卡組', deckColor: 'var(--coral)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><path d="M50 90 L100 35 L150 90" fill="none" stroke="#3E3A39" stroke-width="3"/><circle cx="100" cy="35" r="12" fill="#F6D27A" stroke="#3E3A39" stroke-width="2.5"/></svg>`,
+                concept: '把快樂建立在「別人應該照我的劇本走」，一旦落空便陷入失落。',
+                meaning: '期待往往是一種隱藏的要求。當我們在心裡默默設定了標準，卻沒有說出口，對方沒做到時我們就會感到受傷與憤怒。',
+                apply: '1. 把內心的「應該」換成「我希望，但如果沒有也沒關係」。\n2. 如果有明確的需求，練習用溫和、直接的語言表達出來，而不是讓別人猜。\n3. 欣賞別人原本的樣子，而不是你幻想中的樣子。'
+            },
+            {
+                id: 'p4', name: '討好與犧牲', deck: '陷阱卡組', deckColor: 'var(--coral)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><path d="M100 95 C60 65 45 40 70 30 C85 24 100 40 100 40 C100 40 115 24 130 30 C155 40 140 65 100 95 Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '習慣委屈自己來換取別人的喜歡與和平，久而久之內心累積了隱形怨氣。',
+                meaning: '真正的付出是充滿喜悅的；如果你在幫忙之後感到疲憊、委屈甚至期待回報，那其實是犧牲。犧牲會消耗你的生命能量。',
+                apply: '1. 下次別人提出請求時，先停頓三秒，問問自己的身體與直覺：「我真的願意嗎？」\n2. 練習溫柔而堅定地說「不」，不需要編造複雜的藉口。\n3. 先把自己的杯子裝滿，溢出来的愛才是真正滋養人的。'
+            },
+            {
+                id: 'p5', name: '比較與匱乏', deck: '陷阱卡組', deckColor: 'var(--coral)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><rect x="55" y="60" width="30" height="40" fill="#B9DAA5" stroke="#3E3A39" stroke-width="3"/><rect x="115" y="35" width="30" height="65" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '總是盯著自己沒有的東西，以及別人光鮮亮麗的表面，忽略了自身的豐盛。',
+                meaning: '社群媒體與外在標準很容易誘發我們的匱乏感，讓人覺得自己總是不夠快、不夠好。其實每個人都有自己獨特的花期與時區。',
+                apply: '1. 暫時減少滑手機看別人動態的時間，把目光拉回自己的生活。\n2. 睡前寫下今天擁有的三件小確幸（健康的身體、一頓美食、安穩的床）。\n3. 專注在自己昨天的進步，而不是別人的舞台。'
+            },
+            {
+                id: 'p6', name: '完美主義拖延', deck: '陷阱卡組', deckColor: 'var(--coral)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><circle cx="100" cy="65" r="38" fill="none" stroke="#3E3A39" stroke-width="3" stroke-dasharray="10 6"/><circle cx="100" cy="65" r="10" fill="#A8D3E6" stroke="#3E3A39" stroke-width="2.5"/></svg>`,
+                concept: '因為害怕做不到一百分，所以遲遲不敢開始，用「還沒準備好」來保護自己。',
+                meaning: '完美主義其實是恐懼失敗的偽裝。當我們把門檻設得太高，反而剝奪了自己從嘗試中學習與享受過程的樂趣。',
+                apply: '1. 告訴自己：「先完成 60 分的草稿，永遠勝過停在 0 分的完美空想。」\n2. 把大目標拆解成今天只要花 15 分鐘就能做完的小步驟。\n3. 允許自己在過程中犯錯與調整。'
+            },
+
+            // --- 療癒卡組 (Healing) ---
+            {
+                id: 'h1', name: '領導力', deck: '療癒卡組', deckColor: 'var(--blue)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><path d="M35 90 Q100 50 165 90" fill="none" stroke="#A8D3E6" stroke-width="14" stroke-linecap="round"/><polygon points="100,28 85,68 115,68" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '誠實正直、難以抗拒的溫暖魅力，透過回應他人的需要來療癒自己。',
+                meaning: '領導力是你最有力的療癒形式之一。當你陷入自我懷疑或低潮時，身旁一定有人正需要你的支持。付出自己，就是重新進入生命順流與創造力的鑰匙。',
+                apply: '1. 問自己：「現在身邊有誰需要我的關心或幫助？」\n2. 無論想到誰，傳一則溫暖的訊息或主動給予支持。\n3. 你不需要知道所有答案，只要真誠陪伴，彼此的困境都會在連結中化解。'
+            },
+            {
+                id: 'h2', name: '溫柔寬恕', deck: '療癒卡組', deckColor: 'var(--blue)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><circle cx="100" cy="65" r="36" fill="#B9DAA5" stroke="#3E3A39" stroke-width="3"/><path d="M85 65 L96 76 L118 54" fill="none" stroke="#3E3A39" stroke-width="3.5" stroke-linecap="round"/></svg>`,
+                concept: '寬恕不是認同對方的錯誤，而是決定不再用別人的過錯來懲罰現在的自己。',
+                meaning: '怨恨就像緊握著一塊燒紅的炭火想要丟向別人，最先燙傷的卻是自己的手。放下執著與恩怨，你的心才能騰出空間迎接新的美好。',
+                apply: '1. 承認這件事確實讓你痛過，不強迫自己立刻當聖人。\n2. 在心中對那個人或那段過去說：「我決定釋放這段糾纏，還給自己自由。」\n3. 深吸一口氣，想像把胸口的悶重隨著吐氣一起送走。'
+            },
+            {
+                id: 'h3', name: '真誠溝通', deck: '療癒卡組', deckColor: 'var(--blue)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><rect x="42" y="32" width="60" height="40" rx="12" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/><rect x="98" y="58" width="60" height="40" rx="12" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '放下防衛與指責，用「我感受到……」來表達真實的心聲。',
+                meaning: '許多關係的僵局都源自於「以為對方應該懂」或「用生氣來掩飾受傷」。當你願意卸下盔甲、坦誠說出脆弱與需求時，奇蹟般的理解就會發生。',
+                apply: '1. 溝通前先讓情緒降溫，確保自己是想「解決問題」而不是「爭輸贏」。\n2. 多用「我覺得有點孤單 / 我希望我們可以……」取代「你總是 / 你從不……」。\n3. 專心傾聽對方的話，不急著在腦中反駁。'
+            },
+            {
+                id: 'h4', name: '自我接納', deck: '療癒卡組', deckColor: 'var(--blue)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><circle cx="100" cy="65" r="34" fill="#F2A497" stroke="#3E3A39" stroke-width="3"/><circle cx="90" cy="58" r="3" fill="#3E3A39"/><circle cx="110" cy="58" r="3" fill="#3E3A39"/><path d="M90 73 Q100 82 110 73" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+                concept: '擁抱自己的光明與陰影，此刻的你已經足夠完整，不需要變成別人才值得被愛。',
+                meaning: '療癒的起點永遠是「如實接納現在的自己」。當你不再跟自己的情緒、身材、進度對抗時，內耗就會停止，真正的力量才會升起。',
+                apply: '1. 雙手輕輕抱住自己的肩膀，給自己一個真實的擁抱。\n2. 對鏡子裡的自己微笑，說一聲：「辛苦了，我喜歡現在的你。」\n3. 允許自己今天可以偶爾偷懶、情緒低落或沒有生產力。'
+            },
+            {
+                id: 'h5', name: '勇於脆弱', deck: '療癒卡組', deckColor: 'var(--blue)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><path d="M100 30 Q135 75 100 100 Q65 75 100 30 Z" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '卸下「我很好、我很堅強」的面具，展現真實的柔軟反而能帶來最深的連結。',
+                meaning: '脆弱不是軟弱，而是展現真實自我的勇氣。當你敢於承認「我現在有點害怕」或「我需要幫忙」時，別人才能真正走進你的心裡陪伴你。',
+                apply: '1. 停止在親近的人面前硬撐，適度展現你真實的疲憊或猶豫。\n2. 接受別人主動遞過來的善意與照顧，大方說聲「謝謝」。\n3. 相信即使露出不完美的一面，真正愛你的人依然會在。'
+            },
+            {
+                id: 'h6', name: '回到當下', deck: '療癒卡組', deckColor: 'var(--blue)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><circle cx="100" cy="65" r="38" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3"/><line x1="100" y1="65" x2="100" y2="42" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/><line x1="100" y1="65" x2="118" y2="65" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/></svg>`,
+                concept: '過去已成記憶，未來尚未發生，唯有「此時此刻」是你真正擁有力量創造的地方。',
+                meaning: '大腦喜歡在過去的懊悔與未來的擔憂之間來回奔跑，消耗掉所有能量。只要把心帶回當下，許多煩惱都會瞬間失去重量。',
+                apply: '1. 啟動五感練習：看看周圍 3 種顏色、聽聽 2 種聲音、感受雙腳踩在地面的踏實感。\n2. 喝一杯溫水或茶，專心感受溫度滑過喉嚨的感覺。\n3. 一次只專注做好眼前這一件小事。'
+            },
+
+            // --- 恩典卡組 (Grace) ---
+            {
+                id: 'g1', name: '神的孩子', deck: '恩典卡組', deckColor: 'var(--green)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><path d="M40 85 Q80 65 110 75 L150 55" fill="none" stroke="#F6D27A" stroke-width="12" stroke-linecap="round"/><circle cx="135" cy="42" r="14" fill="#B9DAA5" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '認出你神聖的本質與傳承，宇宙的支持與愛正如同最慈愛的父母般無條件湧現。',
+                meaning: '你是生命源頭所珍愛的孩子，承繼了神性的本質與恩典。所有的解答、釋放與祝福都在等著你接納這份身份：你永遠被看顧著，從不孤單。',
+                apply: '1. 敞開心胸，接受生命為你準備的善意與好運。\n2. 面對困惑時，在心中誠心宣告：「我是被愛與受保護的孩子，一切都會有最好的安排。」\n3. 放下孤軍奮戰的緊繃，信任生命之流會托住你。'
+            },
+            {
+                id: 'g2', name: '奇蹟轉化', deck: '恩典卡組', deckColor: 'var(--green)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><polygon points="100,20 112,52 145,52 118,72 128,104 100,84 72,104 82,72 55,52 88,52" fill="#F6D27A" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/></svg>`,
+                concept: '奇蹟是感知的轉變——當你從恐懼轉向愛，眼前的困境就會展現全新的出路。',
+                meaning: '這張卡預告著突破與驚喜的到來。那些原本看似無解的死胡同，將因為你心念的鬆動而出現意想不到的貴人、靈感或轉機。',
+                apply: '1. 保持開放與好奇心，不為事情的發展預設限制。\n2. 留意生活中突然出現的巧合、靈感或他人的隨口一句提醒。\n3. 相信美好的事情正在路上，準備好迎接驚喜。'
+            },
+            {
+                id: 'g3', name: '豐盛之流', deck: '恩典卡組', deckColor: 'var(--green)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><circle cx="75" cy="70" r="22" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/><circle cx="125" cy="70" r="22" fill="#B9DAA5" stroke="#3E3A39" stroke-width="3"/><circle cx="100" cy="45" r="22" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '宇宙的資源與愛取之不盡，當你心懷感恩與分享，豐盛就會源源不絕流向你。',
+                meaning: '真正的豐盛不僅是物質與金錢的充裕，更包含時間的自由、健康的身心與溫暖的人際關係。你已經跨越了匱乏的考驗，正步入收穫期。',
+                apply: '1. 大方接受別人的讚美、禮物或請客，不再客氣推辭。\n2. 在能力範圍內分享你的喜悅、知識或善意，讓能量流動起來。\n3. 慶祝自己一路走來的努力與成果。'
+            },
+            {
+                id: 'g4', name: '深度信任', deck: '恩典卡組', deckColor: 'var(--green)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><path d="M50 75 Q100 105 150 75" fill="none" stroke="#3E3A39" stroke-width="3.5" stroke-linecap="round"/><circle cx="100" cy="50" r="20" fill="#D4C1EC" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '即使還看不見整條樓梯，依然安心地踏出第一步，相信每一步都算數。',
+                meaning: '你不需要靠焦慮來推動生活。這張卡帶來深沉的寧靜與信心，提醒你生命有著比個人頭腦更宏大的智慧，一切都在恰當的時機點展開。',
+                apply: '1. 晚上睡覺前，把明天要煩惱的事交給宇宙保管，安心睡個好覺。\n2. 遇到延遲或計畫改變時，微笑告訴自己：「這一定是在保護我，或為更好的安排騰出空間。」\n3. 享受當下的平靜與自在。'
+            },
+            {
+                id: 'g5', name: '合一與共鳴', deck: '恩典卡組', deckColor: 'var(--green)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><circle cx="85" cy="65" r="30" fill="#F2A497" fill-opacity="0.7" stroke="#3E3A39" stroke-width="3"/><circle cx="115" cy="65" r="30" fill="#A8D3E6" fill-opacity="0.7" stroke="#3E3A39" stroke-width="3"/></svg>`,
+                concept: '你與身邊的人、大自然以及整個世界緊密相連，同頻的靈魂正互相吸引。',
+                meaning: '孤單感已經消融，你將體會到「被理解、被支持」的溫暖歸屬感。在工作或感情上，這也象徵著和諧的合作與心靈契合的相遇。',
+                apply: '1. 走進大自然，看看樹木、天空或海浪，感受自己也是這片美好風景的一部分。\n2. 珍惜身邊與你頻率相近、相處起來輕鬆自在的朋友。\n3. 用欣賞的眼光看待身邊的每一個人。'
+            },
+            {
+                id: 'g6', name: '內在喜悅', deck: '恩典卡組', deckColor: 'var(--green)',
+                svg: `<svg viewBox="0 0 200 130" width="100%"><circle cx="100" cy="65" r="32" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/><line x1="100" y1="18" x2="100" y2="26" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/><line x1="100" y1="104" x2="100" y2="112" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/><line x1="53" y1="65" x2="61" y2="65" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/><line x1="139" y1="65" x2="147" y2="65" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/></svg>`,
+                concept: '不需要任何外在理由的純粹快樂，是你靈魂最自然的原廠設定。',
+                meaning: '跨越了前面的課題後，你迎來了輕鬆與幽默感。你會發現原本看得很嚴重的事情變小了，心裡重新充滿了像孩子般單純的好奇與笑容。',
+                apply: '1. 去做一件純粹讓你開心、不用管有沒有「用處」的興趣。\n2. 放一首喜歡的音樂，吃一份美味的甜點，好好犒賞自己。\n3. 把你的好心情分享出去，你的笑容就是最棒的禮物。'
+            }
+        ];
+
+        // 狀態管理
+        let drawnCards = []; // 存放抽出的3張卡片物件
+        let flippedState = [false, false, false];
+        let currentIndex = 0;
+        let isSummaryMode = false;
+
+        // 檢查是否有上次儲存的紀錄
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('enlightenment_reading_v1');
+            if (saved) {
+                document.getElementById('resumeBox').style.display = 'block';
+            }
+        });
+
+        function goHome() {
+            document.getElementById('introArea').style.display = 'block';
+            document.getElementById('shuffleArea').style.display = 'none';
+            document.getElementById('readingArea').style.display = 'none';
+            document.getElementById('viewToggleBtn').style.display = 'none';
+            document.getElementById('redrawBtn').style.display = 'none';
+        }
+
+        function resumeLastReading() {
+            const saved = JSON.parse(localStorage.getItem('enlightenment_reading_v1'));
+            if (!saved) return;
+            drawnCards = saved.cards;
+            flippedState = saved.flipped || [true, true, true];
+            currentIndex = 0;
+            isSummaryMode = false;
+            showReadingUI();
+        }
+
+        // 洗牌並抽取3張不重複卡片
+        function startReading() {
+            document.getElementById('introArea').style.display = 'none';
+            document.getElementById('readingArea').style.display = 'none';
+            document.getElementById('shuffleArea').style.display = 'block';
+            document.getElementById('viewToggleBtn').style.display = 'none';
+            document.getElementById('redrawBtn').style.display = 'none';
+
+            // 隨機洗牌演算法 (Fisher-Yates)
+            const pool = [...CARD_DECK];
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+
+            drawnCards = [pool[0], pool[1], pool[2]];
+            flippedState = [true, false, false]; // 預設自動翻開第一張，第二、三張可點擊翻開增加儀式感
+            currentIndex = 0;
+            isSummaryMode = false;
+
+            saveReadingState();
+
+            setTimeout(() => {
+                document.getElementById('shuffleArea').style.display = 'none';
+                showReadingUI();
+            }, 1200);
+        }
+
+        function saveReadingState() {
+            localStorage.setItem('enlightenment_reading_v1', JSON.stringify({
+                cards: drawnCards,
+                flipped: flippedState,
+                time: new Date().toLocaleString()
+            }));
+            document.getElementById('resumeBox').style.display = 'block';
+        }
+
+        function showReadingUI() {
+            document.getElementById('readingArea').style.display = 'block';
+            document.getElementById('viewToggleBtn').style.display = 'inline-flex';
+            document.getElementById('redrawBtn').style.display = 'inline-flex';
+            document.getElementById('viewToggleBtn').innerText = isSummaryMode ? '單張瀏覽' : '一覽三張';
+            renderAll();
+        }
+
+        function renderAll() {
+            renderThreeSlots();
+            if (isSummaryMode) {
+                document.getElementById('singleCardView').style.display = 'none';
+                document.getElementById('allSummaryView').style.display = 'block';
+                renderSummaryView();
+            } else {
+                document.getElementById('singleCardView').style.display = 'block';
+                document.getElementById('allSummaryView').style.display = 'none';
+                renderSingleCard();
+            }
+        }
+
+        function renderThreeSlots() {
+            const container = document.getElementById('threeSlots');
+            container.innerHTML = drawnCards.map((card, idx) => {
+                const pos = POSITIONS[idx];
+                const isFlipped = flippedState[idx];
+                const isSelected = (!isSummaryMode && currentIndex === idx);
+                return `
+                    <div class="mini-slot ${isSelected ? 'selected' : ''} ${!isFlipped ? 'unflipped' : ''}" onclick="selectSlot(${idx})">
+                        <div class="slot-label">${pos.step}</div>
+                        <div style="font-size:11px; color:#555; margin-bottom:4px;">${pos.role.split(' ')[0]}</div>
+                        <div class="slot-name">${isFlipped ? card.name : '✨ 點擊翻牌'}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectSlot(idx) {
+            flippedState[idx] = true;
+            currentIndex = idx;
+            isSummaryMode = false;
+            document.getElementById('viewToggleBtn').innerText = '一覽三張';
+            saveReadingState();
+            renderAll();
+        }
+
+        function flipCurrentCard() {
+            flippedState[currentIndex] = true;
+            saveReadingState();
+            renderAll();
+        }
+
+        function flipAllCards() {
+            flippedState = [true, true, true];
+            saveReadingState();
+            renderAll();
+        }
+
+        function changeCard(delta) {
+            const nextIdx = currentIndex + delta;
+            if (nextIdx >= 0 && nextIdx < 3) {
+                currentIndex = nextIdx;
+                flippedState[currentIndex] = true;
+                saveReadingState();
+                renderAll();
+            }
+        }
+
+        function renderSingleCard() {
+            const card = drawnCards[currentIndex];
+            const pos = POSITIONS[currentIndex];
+            const isFlipped = flippedState[currentIndex];
+            const box = document.getElementById('detailCardContent');
+
+            document.getElementById('prevBtn').disabled = (currentIndex === 0);
+            document.getElementById('nextBtn').disabled = (currentIndex === 2);
+
+            if (!isFlipped) {
+                box.innerHTML = `
+                    <div style="text-align:center; margin-bottom:12px;">
+                        <span class="tag ${pos.badgeClass}">${pos.step} · ${pos.role}</span>
+                    </div>
+                    <div class="unflipped-cover" onclick="flipCurrentCard()">
+                        <div style="font-size: 46px; margin-bottom: 10px;">🔮</div>
+                        <h3 style="font-size: 19px; margin-bottom: 6px;">點擊翻開${pos.step}</h3>
+                        <p style="font-size: 13px; color: #666;">${pos.hint}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const applyLines = card.apply.split('\n').map(line => `<div style="margin-bottom:4px;">${line}</div>`).join('');
+
+            box.innerHTML = `
+                <div style="text-align:center;">
+                    <div class="illustration-frame">
+                        ${card.svg}
+                    </div>
+                    <div class="card-pos-title">${pos.step}【${pos.role}】</div>
+                    <h2 class="card-main-title">${card.name}</h2>
+                    <span class="tag" style="background:${card.deckColor};">${card.deck}</span>
+                </div>
+
+                <div class="section-block">
+                    <div class="section-heading">💡 核心概念</div>
+                    <div class="section-body"><strong>${card.concept}</strong></div>
+                </div>
+
+                <div class="section-block" style="background:#fff;">
+                    <div class="section-heading">📖 牌義深層解析</div>
+                    <div class="section-body">${card.meaning}</div>
+                </div>
+
+                <div class="section-block" style="background:#F7FBF4;">
+                    <div class="section-heading">🌱 日常應用與練習</div>
+                    <div class="section-body">${applyLines}</div>
+                </div>
+            `;
+        }
+
+        function toggleAllSummary() {
+            flippedState = [true, true, true];
+            isSummaryMode = !isSummaryMode;
+            document.getElementById('viewToggleBtn').innerText = isSummaryMode ? '單張瀏覽' : '一覽三張';
+            saveReadingState();
+            renderAll();
+        }
+
+        function renderSummaryView() {
+            const container = document.getElementById('allSummaryView');
+            container.innerHTML = `
+                <div style="margin-bottom:14px;">
+                    <span class="tag tag-yellow">✨ 完整三張牌陣總覽</span>
+                    <h2 style="font-size:19px;">你的今日心靈指引脈絡</h2>
+                </div>
+                ${drawnCards.map((card, idx) => {
+                    const pos = POSITIONS[idx];
+                    return `
+                        <div class="summary-item">
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                                <span class="tag ${pos.badgeClass}" style="margin:0;">${pos.step}：${pos.role}</span>
+                                <span style="font-size:12px; font-weight:700; color:#666;">${card.deck}</span>
+                            </div>
+                            <h3 style="font-size:18px; margin-bottom:6px;">【${card.name}】</h3>
+                            <p style="font-size:14px; line-height:1.6; color:#444; margin-bottom:6px;"><strong>核心：</strong>${card.concept}</p>
+                            <p style="font-size:13px; line-height:1.6; color:#555;">${card.meaning}</p>
+                        </div>
+                    `;
+                }).join('')}
+            `;
+        }
+
+        function copyReadingText() {
+            flippedState = [true, true, true];
+            saveReadingState();
+            renderAll();
+
+            let text = `✨【心靈覺察 · 三張開悟卡解讀】✨\n\n`;
+            drawnCards.forEach((card, idx) => {
+                const pos = POSITIONS[idx];
+                text += `▎${pos.step}【${pos.role}】：${card.name}（${card.deck}）\n`;
+                text += `• 核心概念：${card.concept}\n`;
+                text += `• 指引解析：${card.meaning}\n`;
+                text += `• 行動練習：\n${card.apply}\n\n`;
+            });
+            text += `🌿 願這份指引為你帶來平靜與清晰的力量。`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 2200);
+            });
+        }
+    </script>
+</body>
+</html>
